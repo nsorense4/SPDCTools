@@ -658,9 +658,6 @@ class SPDCalc:
         lambSAir = optics.omega2lamb(ws)
         lambIAir = optics.omega2lamb(wi)
         
-        # npO = lithiumNiobate.OIndexDisp(lambPAir)
-        # nsO = lithiumNiobate.OIndexDisp(lambSAir)
-        # niO = lithiumNiobate.OIndexDisp(lambIAir)
         
         if BBOBool is False:
             npE = lithiumNiobate.EIndexDisp(lambPAir)
@@ -670,13 +667,14 @@ class SPDCalc:
             # calc the parallel component of the wavevector mismatch      
             # the process works better if the light is E-polarized
             # phase matching transverse
-            # thetai = (np.arcsin(-ws*nsE*np.sin(thetas)
-            #                     /(wi*niE)
-            #                     ) 
-            #           )
+            thetai = (np.arcsin(-ws*nsE*np.sin(thetas)
+                                /(wi*niE)
+                                ) 
+                      )
             
-            thetai = -np.arctan(ws*nsE*np.sin(thetas)/(wp*npE-ws*nsE*np.cos(thetas)))
-            # print(thetai)
+            # phase matching minimize total
+            # thetai = -np.arctan(ws*nsE*np.sin(thetas)/(wp*npE-ws*nsE*np.cos(thetas)))
+            
             # phase matching longitudinal
             # thetai = (np.arccos((wp*npE - ws*nsE*np.cos(thetas))
             #                     /(wi*niE)
@@ -714,7 +712,7 @@ class SPDCalc:
             # BBO should be longitudinally phase matched
             #transverse phase matching
             
-            thetai = (np.arccos(nsE*ws/(niE*wi)*np.sin(thetas))) - np.pi/2
+            # thetai = (np.arccos(nsE*ws/(niE*wi)*np.sin(thetas))) - np.pi/2
             
             # kp = wp*npE/optics.c
             ks = ws*nsE*np.cos(thetas)/optics.c
@@ -725,10 +723,10 @@ class SPDCalc:
                                ) 
                       )
             # phase matching longitudinal
-            thetai = (np.arccos((wp*npE - ws*nsE*np.cos(thetas))
-                                /(wi*niE)
-                                ) 
-                      ) * -np.sign(thetas)
+            # thetai = (np.arccos((wp*npE - ws*nsE*np.cos(thetas))
+            #                     /(wi*niE)
+            #                     ) 
+            #           ) * -np.sign(thetas)
             # thetai = (np.arccos(nsE*ws/(niE*wi)*np.sin(thetas))) - np.pi/2
             DeltaKPar = (1/optics.c*(-wp*npE
                                     + ws*nsE*np.cos(thetas)
@@ -741,9 +739,6 @@ class SPDCalc:
                                     )
                           )
 
-            # cax = plt.matshow(thetai)
-            # plt.colorbar(cax)
-            # calc the phase matching function
             
             waistp = 5000e-9 #m
         
@@ -939,7 +934,11 @@ class SPDCResonator:
         ks = lambda lamb: optics.lamb2k(lamb, ns(lamb))
         kp = optics.lamb2k(lambP, npump(lambP))
         
-        thetai = lambda lamb: -np.arctan(np.abs(ks(lamb))*np.sin(theta)/(np.abs(kp)-np.abs(ks(lamb))*np.cos(theta)))
+        # for total phase minimization
+        # thetai = lambda lamb: -np.arctan(np.abs(ks(lamb))*np.sin(theta)/(np.abs(kp)-np.abs(ks(lamb))*np.cos(theta)))
+        
+        # for transverse phase matching
+        thetai = lambda lamb: -np.arcsin(np.abs(ks(lamb))*np.sin(theta)/(np.abs(ki(lamb))))
         
         deltas = lambda lamb: L*ks(lamb)*np.cos(theta)
         deltai = lambda lamb: L*ki(lamb)*np.cos(thetai(lamb))
